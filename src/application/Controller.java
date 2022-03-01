@@ -35,6 +35,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
 
 public class Controller implements Initializable {
 	public String collectInfo;
@@ -44,6 +45,9 @@ public class Controller implements Initializable {
 	public int fieldNumber;
 	public static String emptyField = "(empty)";
 	public static boolean visiblNumField;
+	public static String element;
+	Hashtable<String, String[]> hashMap = new Hashtable<String, String[]>();
+	
 	@FXML
 	CheckBox checkBoxRandomize = new CheckBox(); 
 	
@@ -74,6 +78,9 @@ public class Controller implements Initializable {
 	@FXML
 	ProgressBar progressBar = new ProgressBar();
 	BigDecimal progress = new BigDecimal(String.format("%.2f", 0.0));
+	
+	@FXML
+	CheckBox jsonCheckbox = new CheckBox();
 	
 	@FXML
 	TextField fileNameField = new TextField();
@@ -293,6 +300,7 @@ public class Controller implements Initializable {
 		if (delimiterTemp == null) {
 			delimiterTemp="Custom";
 		}
+		
 		switch (delimiterTemp) {
 			case "Comma":
 				delimiter = ",";
@@ -306,9 +314,10 @@ public class Controller implements Initializable {
 			case "Custom":
 				delimiter = String.valueOf(delimiterField.getText());
 				break;
-			/*
-			 * case "": delimiter = String.valueOf(delimiterField.getText()); break;
-			 */
+			case "":
+				// delimiter = String.valueOf(delimiterField.getText());
+				showMessage("You must select a delimiter.",false);
+				break;
 				
 			default:
 				showMessage("You must select a delimiter.",false);
@@ -321,10 +330,11 @@ public class Controller implements Initializable {
 		   }
 		
 		String getInfo = writeInfo();
+		
+		
 		fileName = "/tmp/test/"+fileNameField.getText();
 	
-		
-		
+
 		
 		try {
 
@@ -345,8 +355,7 @@ public class Controller implements Initializable {
 						if(dataSame.isSelected()) {
 							writeFile.write(zeekDataFormat("time"));
 							
-							
-	
+
 							
 							}
 		
@@ -358,6 +367,7 @@ public class Controller implements Initializable {
 							switch (switchRandom) {
 							
 								case 0:
+									
 									writeFile.write(returnDate());
 									returnDateCount+=1;
 									break;
@@ -407,8 +417,96 @@ public class Controller implements Initializable {
 								{writeFile.write(delimiter);}
 							}
 					
+						if (dataRandomized.isSelected() && !jsonCheckbox.isSelected()) {
+							Random rand = new Random();
+							switchRandom = rand.nextInt(12);
+							switch (switchRandom) {
+							
+								case 0:
+									portNumberCount+=1;
+									element += enumReturn(1);
+									
+									break;
+									
+								case 1: // some random word
+									createRandomWordCount+=1;
+									element += createRandomWord(12);
+									// writeFile.write(createRandomWord(12));
+									break;
+									
+								case 2: // some random IP
+									createRandomIPCount+=1;
+									element += createRandomIP(250);
+									// writeFile.write(createRandomIP(250));
+									break;
+									
+								case 3: // some random port
+									returnIntegerCount+=1;
+									element += returnInteger(65000);
+									// writeFile.write(returnInteger(65000));
+									break;
+									
+								case 4:  // some random double 
+									returnRandDoubleCount+=1;
+									element += returnRandDouble(1111.1111,9999.9999); 
+									// writeFile.write(returnRandDouble(1111.1111,9999.9999));
+									break;
+									
+								case 5: // some random url hostname
+									returnURLCount+=1;
+									element += returnURL();
+									// writeFile.write(returnURL());
+									break;
+									
+								case 6: // some random date
+									returnDateCount+=1;
+									element += returnDate(); 
+									// writeFile.write(returnDate());
+									break;
+									
+								case 7: // drop an empty now and then 
+									emptyFieldCount+=1;
+									element += emptyField;
+									// writeFile.write(emptyField);
+									break;
+								
+								case 8: // drop an empty now and then 
+									portNumberCount+=1;
+									element += enumReturn(1); 
+									// writeFile.write(enumReturn(1));
+									break;
+									
+								case 9: // drop an empty now and then 
+									portNumberCount+=1;
+									element += enumReturn(2); 
+									// writeFile.write(enumReturn(2));
+									break;
+									
+								case 10:
+									returnVectorCount+=1;
+									element += returnVector(3); 
+									// writeFile.write(returnVector(3));
+									break;
+									
+								case 11:
+									// writeFile.write(returnBool());
+									element += returnBool(); 
+									returnBoolCount+=1;
+									break;
+									
+								default:
+									break;
+							}
+
+							if (fields == fieldNumber) 
+							 	{writeFile.write("");}
+							else
+								{writeFile.write(delimiter);}			
+							}
 						
-						if (dataRandomized.isSelected()) {
+						
+						
+						if (dataRandomized.isSelected() && jsonCheckbox.isSelected()) {
 							Random rand = new Random();
 							switchRandom = rand.nextInt(12);
 							switch (switchRandom) {
@@ -575,6 +673,7 @@ public class Controller implements Initializable {
 		for (int i = 0; i < delimiterOptions.length; i++) {
 			delimiterCombo.getItems().add((delimiterOptions[i]));
 		}
+		
 		// delimiterField.setText(",");
 		updateDelimiter();
 		Random rand = new Random();
